@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            * {
+                padding:0;
+                margin: 0;
+            }
+            .wrapper > div {
+                background: #eee;
+                padding: 1em;
+                border: 1px solid black;
+                box-sizing: border-box;
+            }
+
+            .wrapper > div:nth-child(odd) {
+                background:  #ddd;
+            }
+
+            h1 {
+                text-align: center;
+            }
+
+            @media  (max-width: 959px) {
+                main {
+                    text-align: center;
+                }
+            }
+
+            /** Resort to floats to emulate grid goal */
+            .wrapper > div {
+                float: left;
+            }
+
+            .wrapper::after {
+                content: "";
+                clear: both;
+            }
+
+            @media (min-width: 1160px) {
+                .wrapper > div {
+                    min-width: 25%;
+                }
+            }
+
+            @media (min-width: 960px) and (max-width: 1159px) {
+                .wrapper > div {
+                    min-width: 33%;
+                }
+            }
+
+            @media (min-width: 750px) and (max-width: 959px) {
+                .wrapper > div {
+                    min-width: 50%;
+                }
+            }
+
+            @media (max-width: 749px) {
+                .wrapper > div {
+                    width: 100%;
+                }
+            }
+
+            /** Grid layout for easy positioning */
+            @supports (display: grid) {
+                .wrapper {
+                  display: grid;
+                  grid-template-columns: repeat(4, 1fr);
+                  grid-auto-rows: 100px;
+                }
+
+                .wrapper > div {
+                    float: none;
+                }
+
+                @media (min-width: 960px) and (max-width: 1160px) {
+                    .wrapper {
+                        grid-template-columns: repeat(3, 1fr);
+                    }
+                }
+                
+                @media (min-width: 750px) and (max-width: 959px) {
+                    .wrapper {
+                        grid-template-columns: repeat(2, 1fr);
+                    }
+                }
+                
+                @media (max-width: 749px) {
+                    .wrapper {
+                        grid-template-columns: 1fr;
+                    }
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <main>
+            <header>
+                <h1>Simple Grid layout tests - <span title="browser type"></span></h1>
+                <section>
+                    <p>This is just a simple test for a responsive design. The idea is the layouts go from 4x1 --> 3x1 --> 2x1 --> 1x1 depending on the width of the viewport. This is achieved through the grid layout in Chrome, Firefox, &amp; Edge and through floats in IE 11.</p>
+                </section>
+            </header>
+            <section class="wrapper">
+                <div>This is just a test.</div>
+                <div>This is just a test.</div>
+                <div>This is just a test.</div>
+                <div>This is just a test.</div>
+                <div>This is just a test.</div>
+                <div>This is just a test.</div>
+                <div>This is just a test.</div>
+                <div>This is just a test.</div>
+            </section>
+        </main>
+        <script>
+            (function(){ 
+                let rgxMap = {
+                    'Internet Explorer': /Trident/,
+                    'Microsoft Edge': /Edge/,
+                    'Firefox': /Firefox/,
+                    'Chrome': /Chrome/
+                };
+
+                if(document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', sniffBrowser);
+                } else {
+                    sniffBrowser();
+                }
+
+                function sniffBrowser() {
+                    let browser = '', userAgent = navigator.userAgent;
+                    for(let prop in rgxMap) {
+                        if(rgxMap[prop].test(userAgent)) {
+                            browser = prop;
+                            break;
+                        }
+                    }
+
+                    // set the browser type
+                    document.querySelector('span[title="browser type"]').innerText = 'You are on ' +  browser;
+                }
+            })();
+        </script>
+    </body>
+</html>
