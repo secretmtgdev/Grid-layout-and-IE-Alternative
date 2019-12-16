@@ -2,19 +2,27 @@
 <html>
     <head>
         <style>
+            main {
+                max-width: 1320px;
+                margin: 0 auto;
+            }
+
+            .card {
+                flex: 1;
+                background-color: red;
+                box-sizing: border-box;
+                border: 1px solid black;
+                height: 400px;
+            }
+
             * {
                 padding:0;
                 margin: 0;
             }
             .wrapper > div {
-                background: #eee;
                 padding: 1em;
                 border: 1px solid black;
                 box-sizing: border-box;
-            }
-
-            .wrapper > div:nth-child(odd) {
-                background:  #ddd;
             }
 
             h1 {
@@ -66,7 +74,7 @@
                 .wrapper {
                   display: grid;
                   grid-template-columns: repeat(4, 1fr);
-                  grid-auto-rows: 100px;
+                  grid-auto-rows: 100%;
                 }
 
                 .wrapper > div {
@@ -76,70 +84,72 @@
                 @media (min-width: 960px) and (max-width: 1160px) {
                     .wrapper {
                         grid-template-columns: repeat(3, 1fr);
+                        grid-template-rows: 1fr;
+                    }
+
+                    .wrapper > div:last-child {
+                        grid-column: 1/4;
                     }
                 }
                 
                 @media (min-width: 750px) and (max-width: 959px) {
                     .wrapper {
                         grid-template-columns: repeat(2, 1fr);
+                        grid-template-rows: repeat(2, 1fr);
                     }
                 }
                 
                 @media (max-width: 749px) {
                     .wrapper {
                         grid-template-columns: 1fr;
+                        grid-template-rows: repeat(4, 1fr);
                     }
                 }
+            }
+
+            div[data-triggered=false] {
+                background-color: blue;
             }
         </style>
     </head>
     <body>
         <main>
-            <header>
-                <h1>Simple Grid layout tests - <span title="browser type"></span></h1>
-                <section>
-                    <p>This is just a simple test for a responsive design. The idea is the layouts go from 4x1 --> 3x1 --> 2x1 --> 1x1 depending on the width of the viewport. This is achieved through the grid layout in Chrome, Firefox, &amp; Edge and through floats in IE 11.</p>
-                </section>
-            </header>
-            <section class="wrapper">
-                <div>This is just a test.</div>
-                <div>This is just a test.</div>
-                <div>This is just a test.</div>
-                <div>This is just a test.</div>
-                <div>This is just a test.</div>
-                <div>This is just a test.</div>
-                <div>This is just a test.</div>
-                <div>This is just a test.</div>
-            </section>
+            <section id=infinity></section>
         </main>
         <script>
-            (function(){ 
-                let rgxMap = {
-                    'Internet Explorer': /Trident/,
-                    'Microsoft Edge': /Edge/,
-                    'Firefox': /Firefox/,
-                    'Chrome': /Chrome/
-                };
+            var currTrigger = 1;
+            window.addEventListener('scroll', function() {
+                // grab data set 
+                var sets = document.querySelectorAll('div[data-triggered]');
+                var target = sets[sets.length-1];
 
-                if(document.readyState === 'loading') {
-                    document.addEventListener('DOMContentLoaded', sniffBrowser);
-                } else {
-                    sniffBrowser();
+                // window.scrollY is not supported by IE
+                var windowHeight = document.documentElement.scrollTop+ window.innerHeight, targetPlacement = target.offsetHeight + target.offsetTop;
+                if(windowHeight > targetPlacement) {
+                    load();
                 }
+            });
 
-                function sniffBrowser() {
-                    let browser = '', userAgent = navigator.userAgent;
-                    for(let prop in rgxMap) {
-                        if(rgxMap[prop].test(userAgent)) {
-                            browser = prop;
-                            break;
+            function load() {
+                var firstRandCol = Math.floor(Math.random()*3), secondRandCol = Math.floor(Math.random()*3);
+                for(var i = 0; i < 4; i++) {
+                    var row = document.createElement('section');
+                    row.className = 'wrapper';
+                    for(var j = 0; j < 4; j++) {
+                        var card = document.createElement('div');
+                        card.className = 'card';
+                        
+                        // set trigger
+                        if((i === 1 && j ===firstRandCol)||(i===3&&j===secondRandCol)) {
+                            card.dataset.triggered=false;
+                            card.dataset.id=currTrigger;
                         }
+                        row.appendChild(card);
                     }
-
-                    // set the browser type
-                    document.querySelector('span[title="browser type"]').innerText = 'You are on ' +  browser;
+                    infinity.appendChild(row)
                 }
-            })();
+            }
+            load();
         </script>
     </body>
 </html>
